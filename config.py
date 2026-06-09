@@ -10,3 +10,4 @@ CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50    
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"  # Free local model — no API key needed
 CHUNKING_STRATEGY = "fixed"
+COLLECTION_NAME = "research_doc"

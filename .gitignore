@@ -7,3 +7,5 @@ venv/
 outputs/
 *.log
 .DS_Store
+ingestion/experiment.*
+chroma_store/

@@ -8,9 +8,6 @@ def create_vector_store(chunks: list, collection_name: str = COLLECTION_NAME):
     """
     Embed chunks and store them in ChromaDB.
     Returns the vector store object.
-    
-    Attempt this yourself. Key question: does Chroma.from_documents()
-    do the embedding for you, or do you pass pre-computed vectors?
     """
     embeddings = get_embeddings_model()
     store = Chroma.from_documents(
@@ -18,7 +15,7 @@ def create_vector_store(chunks: list, collection_name: str = COLLECTION_NAME):
         embedding=embeddings,
         persist_directory=CHROMA_PATH,
         collection_name=collection_name,
-        collection_metadata={"hnsw_space":"cosine"}
+        collection_metadata={"hnsw:space":"cosine"}
     )
     return store
 

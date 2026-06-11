@@ -38,9 +38,21 @@ def build_rag_chain():
     "Explain how LCEL RunnablePassthrough works in a RAG chain with an example"
     """
     retriever = get_retriever()
-    llm = ChatAnthropic(model="claude-3-5-haiku-20241022", temperature=0)
+    llm = ChatAnthropic(model="claude-haiku-4-5-20251001", temperature=0)
     
     chain = (
-        ...  # attempt this yourself first
+        {
+        "context": retriever | format_docs,
+        "question": RunnablePassthrough()
+    }
+    | RAG_PROMPT
+    | llm
+    | StrOutputParser()
     )
     return chain
+
+if __name__ == "__main__":
+    chain = build_rag_chain()
+    
+    answer = chain.invoke("What are the challenges in RAG process?")
+    print(answer)

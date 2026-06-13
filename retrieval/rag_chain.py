@@ -33,9 +33,6 @@ def build_rag_chain():
     retriever | format_docs → context
     question → passthrough
     both → prompt → llm → output_parser
-    
-    This will be confusing. That's fine. Try, fail, ask Copilot Chat:
-    "Explain how LCEL RunnablePassthrough works in a RAG chain with an example"
     """
     retriever = get_retriever()
     llm = ChatAnthropic(model="claude-haiku-4-5-20251001", temperature=0)
@@ -51,8 +48,8 @@ def build_rag_chain():
     )
     return chain
 
-if __name__ == "__main__":
-    chain = build_rag_chain()
+#if __name__ == "__main__":
+#    chain = build_rag_chain()
     
-    answer = chain.invoke("What are the challenges in RAG process?")
-    print(answer)
+#    answer = chain.invoke("What are the challenges in RAG process?")
+#    print(answer)

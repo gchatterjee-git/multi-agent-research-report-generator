@@ -1,6 +1,6 @@
 from ingestion.store import load_vector_store
 
-def get_retriever(k: int = 3):
+def get_retriever(k: int = 5):
     """
     Return a LangChain retriever from the vector store.
     

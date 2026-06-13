@@ -6,7 +6,7 @@ from ingestion.splitter import split_documents
 from ingestion.store import create_vector_store
 import shutil
 import os
-from config import CHROMA_PATH
+from config import CHROMA_PATH, CHUNK_SIZE, CHUNK_OVERLAP
 
 # Add this at the top of your notebook before create_vector_store()
 if os.path.exists(CHROMA_PATH):
@@ -15,7 +15,7 @@ if os.path.exists(CHROMA_PATH):
 
 
 docs = load_document("/Users/gaurav/ai-engineering-from-scratch/projects/multi-agent-research-report-generator/data/Retrieval-augmented_generation.pdf")
-chunks = split_documents(docs, chunk_size=500, chunk_overlap=50)
+chunks = split_documents(docs, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
 store = create_vector_store(chunks)
 
 results = store.similarity_search("What problems does RAG solve in language models?", k=3)

@@ -48,8 +48,8 @@ def build_rag_chain():
     )
     return chain
 
-#if __name__ == "__main__":
-#    chain = build_rag_chain()
+if __name__ == "__main__":
+    chain = build_rag_chain()
     
-#    answer = chain.invoke("What are the challenges in RAG process?")
-#    print(answer)
+    answer = chain.invoke("What are the challenges in RAG process?")
+    print(answer)

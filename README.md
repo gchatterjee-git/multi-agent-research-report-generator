@@ -1,24 +1,29 @@
 # Multi-Agent Research & Report Generator
 
-A multi-agent system that autonomously researches topics and generates structured reports using Claude AI.
+A multi-agent system that autonomously researches topics and generates structured reports using Claude AI and CrewAI.
 
 ## Overview
 
-This project demonstrates a multi-agent architecture where specialized agents collaborate to:
-- Search and gather information from multiple sources
-- Analyze and synthesize research findings
-- Generate well-structured, cited reports
+Four specialised agents collaborate in sequence to produce a grounded, well-structured research report:
+
+1. **Researcher** — gathers raw findings from the knowledge base and web
+2. **Analyst** — synthesises findings into themes and implications
+3. **Devil's Advocate** — challenges assumptions and surfaces gaps
+4. **Writer** — integrates all outputs into a final Markdown report
 
 ## Project Structure
 
 ```
 multi-agent-research-report-generator/
-├── ingestion/
-│   ├── loader.py           # Document loading (.pdf, .txt)
-│   ├── splitter.py         # Text chunking with overlap
-│   ├── embedder.py         # HuggingFace local embeddings
-│   ├── store.py            # ChromaDB vector store (create + load)
-│   └── test.py             # End-to-end ingestion test script
+├── agents/
+│   ├── researcher.py       # Gathers raw research from KB and web
+│   ├── analyst.py          # Synthesises findings into insights
+│   ├── devils_advocate.py  # Critiques assumptions and logic
+│   ├── writer.py           # Produces the final Markdown report
+│   └── test_agent.py       # Agent testing script
+├── crew/
+│   ├── crew.py             # Assembles and runs the full CrewAI pipeline
+│   └── tasks.py            # Task definitions wired to each agent
 ├── retrieval/
 │   ├── retriever.py        # LangChain MMR retriever from vector store
 │   └── rag_chain.py        # Full RAG chain (retriever → prompt → Claude → output)
@@ -26,17 +31,21 @@ multi-agent-research-report-generator/
 │   ├── web_search.py       # Tavily web search LangChain tool
 │   ├── vector_search.py    # Knowledge base search LangChain tool
 │   └── tools_test.py       # Manual tool testing script
-├── agents/
-│   └── researcher.py       # Researcher agent (in progress)
-├── workflows/              # Agent orchestration workflows (coming soon)
+├── ingestion/
+│   ├── loader.py           # Document loading (.pdf, .txt)
+│   ├── splitter.py         # Text chunking with overlap
+│   ├── embedder.py         # HuggingFace local embeddings
+│   ├── store.py            # ChromaDB vector store (create + load)
+│   └── test.py             # End-to-end ingestion test script
 ├── tests/                  # Unit and integration tests
 ├── data/                   # Input documents (e.g. PDFs)
 ├── chroma_store/           # Persisted vector store (auto-generated)
+├── output_report.md        # Generated report output
 ├── config.py               # Centralised config and env vars
 └── requirements.txt
 ```
 
-## What's Built So Far
+## What's Built
 
 ### 1. Ingestion Pipeline
 
@@ -51,8 +60,6 @@ Handles loading, chunking, embedding, and storing documents for retrieval.
 
 ### 2. Retrieval & RAG Chain
 
-Retrieves relevant chunks from the vector store and generates grounded answers.
-
 | Module | Description |
 |---|---|
 | `retriever.py` | Wraps ChromaDB with an MMR retriever (`k=5`, `fetch_k=10`) for diversity-aware retrieval |
@@ -60,12 +67,30 @@ Retrieves relevant chunks from the vector store and generates grounded answers.
 
 ### 3. Tools
 
-LangChain `Tool` wrappers that agents can call to gather information.
+LangChain `Tool` wrappers that agents use to gather information.
 
 | Tool | Description |
 |---|---|
 | `web_search.py` | Searches the web via Tavily; returns formatted results with source URLs |
 | `vector_search.py` | Queries the private knowledge base via the RAG chain; returns grounded answers |
+
+### 4. Agents
+
+Each agent is a CrewAI `Agent` with a defined role, goal, and backstory.
+
+| Agent | Role | Tools |
+|---|---|---|
+| `researcher.py` | Senior Research Analyst | `web_search`, `vector_search` |
+| `analyst.py` | Senior Research Analyst | None (works from researcher output) |
+| `devils_advocate.py` | Critical Reviewer | None (works from prior outputs) |
+| `writer.py` | Research Report Writer | None (integrates all prior outputs) |
+
+### 5. Crew & Tasks
+
+| Module | Description |
+|---|---|
+| `tasks.py` | Defines 4 tasks (research → analysis → critique → writing) with explicit context chaining |
+| `crew.py` | Assembles the crew, runs sequential process, saves output to `output_report.md` |
 
 ### Configuration
 
@@ -94,17 +119,21 @@ ANTHROPIC_API_KEY=your_key_here
 TAVILY_API_KEY=your_key_here
 ```
 
-## Running the Ingestion Test
-
-Place a PDF in the `data/` directory, update the path in `ingestion/test.py`, then run:
+## Running the Research Crew
 
 ```bash
-python -m ingestion.test
+python -m crew.crew
 ```
 
-## Running the Tools Test
+This runs a full research pipeline on the default topic and saves the report to `output_report.md`. To change the topic, update the `topic` variable in `crew/crew.py`.
+
+## Other Scripts
 
 ```bash
+# Test the ingestion pipeline
+python -m ingestion.test
+
+# Test individual tools
 python -m tools.tools_test
 ```
 
@@ -112,4 +141,4 @@ python -m tools.tools_test
 
 - Python 3.11+
 - Anthropic API key
-- Tavily API key (for web search)
+- Tavily API key

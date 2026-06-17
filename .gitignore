@@ -11,3 +11,4 @@ ingestion/experiment.*
 chroma_store/
 learnings.md
 listClaude*
+output*
